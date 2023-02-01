@@ -5,5 +5,6 @@ if (-not(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 	exit
 }
 
-WBADMIN START BACKUP -addtarget:e: -include:D:,C: -allCritical -vssFull -quiet
+WBADMIN START BACKUP -backupTarget:e: -include:c:,d: -allCritical -vssFull -quiet
+
 Stop-Computer -Force
