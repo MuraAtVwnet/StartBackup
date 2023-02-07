@@ -5,6 +5,15 @@ if (-not(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 	exit
 }
 
+Log "Start Backup"
+
 WBADMIN START BACKUP -backupTarget:e: -include:c:,d: -allCritical -vssFull -quiet
+
+if( $LASTEXITCODE -eq 0 ){
+	Log "End Backup"
+}
+else{
+	Log "Fail Backup"
+}
 
 Stop-Computer -Force
