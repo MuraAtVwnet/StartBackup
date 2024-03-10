@@ -1,13 +1,14 @@
 # モジュール名
 $ModuleName = "StartBackup"
 
-# モジュール Path
+# Module Path
+if(($PSVersionTable.Platform -eq "Win32NT") -or ($PSVersionTable.Platform -eq $null)){
 $ModulePath = Join-Path (Split-Path $PROFILE -Parent) "Modules"
-
-# モジュールを配置する Path
+}else{
+$ModulePath = Join-Path ($env:HOME) "/.local/share/powershell/Modules"}
 $RemovePath = Join-Path $ModulePath $ModuleName
 
-# ディレクトリ削除
+# Remove Direcory
 if( Test-Path $RemovePath ){
 	Remove-Item $RemovePath -Force -Recurse
 }

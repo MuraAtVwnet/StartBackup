@@ -1,18 +1,19 @@
 # モジュール名
 $ModuleName = "StartBackup"
 
-# モジュール Path
+# Module Path
+if(($PSVersionTable.Platform -eq "Win32NT") -or ($PSVersionTable.Platform -eq $null)){
 $ModulePath = Join-Path (Split-Path $PROFILE -Parent) "Modules"
+}else{
+$ModulePath = Join-Path ($env:HOME) "/.local/share/powershell/Modules"}
 
-# モジュールを配置する Path
 $NewPath = Join-Path $ModulePath $ModuleName
 
-# ディレクトリ作成
+# Make Directory
 if( -not (Test-Path $NewPath)){
-	md $NewPath
+	New-Item $NewPath -ItemType Directory -ErrorAction SilentlyContinue
 }
 
-# モジュールのコピー
+# Copy Module
 $ModuleFileName = Join-Path $PSScriptRoot ($ModuleName + ".psm1")
-
-copy $ModuleFileName $NewPath
+Copy-Item $ModuleFileName $NewPath
