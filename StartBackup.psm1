@@ -52,9 +52,9 @@ WBADMIN START BACKUP -backupTarget:f: -include:c:,d:,e: -allCritical -vssFull -q
 
 if( $LASTEXITCODE -eq 0 ){
 	Log "End Backup"
+	Stop-Computer -Force
 }
 else{
 	Log "Fail Backup"
 }
 
-Stop-Computer -Force
