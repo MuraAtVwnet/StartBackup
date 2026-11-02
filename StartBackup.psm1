@@ -7,7 +7,7 @@ if (-not(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 
 Log "Start Backup"
 
-WBADMIN START BACKUP -backupTarget:e: -include:c:,d: -allCritical -vssFull -quiet
+WBADMIN START BACKUP -backupTarget:f: -include:c:,d:,e: -allCritical -vssFull -quiet
 
 if( $LASTEXITCODE -eq 0 ){
 	Log "End Backup"
