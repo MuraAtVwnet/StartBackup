@@ -1,60 +1,64 @@
 ﻿# StartBackup
 
-function Log(
-            $LogString
-            ){
 
-    # ログの出力先
-    $LogPath = "C:\Log"
+function StartBackup(){
 
-    # ログファイル名
-    $LogName = "BackupLog"
+	function Log(
+	            $LogString
+	            ){
 
-    $Now = Get-Date
+	    # ログの出力先
+	    $LogPath = "C:\Log"
 
-    # Log 出力文字列に時刻を付加(YYYY/MM/DD HH:MM:SS.MMM $LogString)
-    $Log = $Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " "
-    $Log += $LogString
+	    # ログファイル名
+	    $LogName = "BackupLog"
 
-    # ログファイル名が設定されていなかったらデフォルトのログファイル名をつける
-    if( $LogName -eq $null ){
-        $LogName = "LOG"
-    }
+	    $Now = Get-Date
 
-    # ログファイル名(XXXX_YYYY-MM-DD.log)
-    $LogFile = $LogName + "_" +$Now.ToString("yyyy-MM-dd") + ".log"
+	    # Log 出力文字列に時刻を付加(YYYY/MM/DD HH:MM:SS.MMM $LogString)
+	    $Log = $Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " "
+	    $Log += $LogString
 
-    # ログフォルダーがなかったら作成
-    if( -not (Test-Path $LogPath) ) {
-        New-Item $LogPath -Type Directory
-    }
+	    # ログファイル名が設定されていなかったらデフォルトのログファイル名をつける
+	    if( $LogName -eq $null ){
+	        $LogName = "LOG"
+	    }
 
-    # ログファイル名
-    $LogFileName = Join-Path $LogPath $LogFile
+	    # ログファイル名(XXXX_YYYY-MM-DD.log)
+	    $LogFile = $LogName + "_" +$Now.ToString("yyyy-MM-dd") + ".log"
 
-    # ログ出力
-    Write-Output $Log | Out-File -FilePath $LogFileName -Encoding Default -append
+	    # ログフォルダーがなかったら作成
+	    if( -not (Test-Path $LogPath) ) {
+	        New-Item $LogPath -Type Directory
+	    }
 
-    # echo させるために出力したログを戻す
-    Return $Log
-}
+	    # ログファイル名
+	    $LogFileName = Join-Path $LogPath $LogFile
+
+	    # ログ出力
+	    Write-Output $Log | Out-File -FilePath $LogFileName -Encoding Default -append
+
+	    # echo させるために出力したログを戻す
+	    Return $Log
+	}
 
 
+	if (-not(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))) {
+		echo "[FAIL] 実行には管理権限が必要"
+		exit
+	}
 
-if (-not(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))) {
-	echo "[FAIL] 実行には管理権限が必要"
-	exit
-}
+	Log "Start Backup"
 
-Log "Start Backup"
+	WBADMIN START BACKUP -backupTarget:f: -include:c:,d:,e: -allCritical -vssFull -quiet  2>&1 | Tee-Object -Variable Result
 
-WBADMIN START BACKUP -backupTarget:f: -include:c:,d:,e: -allCritical -vssFull -quiet
-
-if( $LASTEXITCODE -eq 0 ){
-	Log "End Backup"
-	Stop-Computer -Force
-}
-else{
-	Log "Fail Backup"
+	if( $LASTEXITCODE -eq 0 ){
+		Log "End Backup"
+		Stop-Computer -Force
+	}
+	else{
+		Log "Fail Backup"
+		Log $Result
+	}
 }
 
